@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6/prop-types.js"></script>
+
+    <style>
+      #wrapper {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center;
+      }
+      .form {
+        display: flex;
+        flex-flow: column nowrap;
+        min-width: 300px;
+        max-width: 70%;
+        padding: 30px 16px;
+        justify-content: center;
+        background-color: aqua;
+      }
+      .form__header {
+        text-align: center;
+      }
+      .form__button {
+        width: 160px;
+        margin: 0 auto;
+      }
+      .form__input {
+        padding: 8px;
+        margin-bottom: 16px;
+      }
+      .form__error {
+        padding: 10px;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div id="wrapper"></div>
+
+    <script type="text/babel">
+
+      /* function foo(a, b){
+        if(typeof a !== 'number'){
+          throw 'First argument must be a number'
+        }
+        return a + b 
+      }
+
+      try {
+        JSON.parse('sss')
+
+      } catch (error) {
+        if(error === 'First argument must be a number'){
+          console.log('Возникла проблемка: ' + error)
+        } else {
+          throw error
+        }
+      } */
+
+
+      class Validator { 
+        getNameStatus(name) {
+          if(name === ''){ 
+             return 'EMPTY'
+          } 
+          if(name.length < 3){ 
+            return 'TOO_SHORT'
+          }
+          return 'CORRECT'                
+        }
+        getAgeStatus(age) {
+          if(age === ''){ 
+             return 'EMPTY'
+          } 
+          if(age < 18){ 
+            return 'TOO_YOUNG'
+          }
+          if(age > 100){ 
+            return 'TOO_OLD'
+          }
+          return 'CORRECT'
+        }
+      }
+ 
+  
+      class LoginForm extends React.Component {
+        validator = new Validator();
+        messages = { 
+          name: { 
+            EMPTY: "Вы не указали имя",
+            TOO_SHORT: "Имя должно быть больше 2 букв"
+          },
+          age: {
+            EMPTY: "Вы не указали возраст",
+            TOO_YOUNG: 'Вы слишком молоды',
+            TOO_OLD: 'Вы слишком стары'
+          }
+        }
+        state = {
+          name: '',
+          age: ''
+        }
+        nameStatus = this.validator.getNameStatus(this.state.name);
+        ageStatus = this.validator.getAgeStatus(this.state.age);
+
+        onNameChangeHandler = (e) => {
+          this.setState({ name: e.target.value });
+          this.nameStatus = this.validator.getNameStatus(e.target.value);
+        }
+
+        onAgeChangeHandler = (e) => {
+          this.setState({ age: e.target.value });
+          this.ageStatus = this.validator.getAgeStatus(e.target.value);
+        }
+
+        canBeSubmitted() {
+          return this.nameStatus === 'CORRECT' && this.ageStatus === 'CORRECT'
+        }
+
+        onSubmitHandler = (e) => {
+          e.preventDefault();
+          
+          if (this.canBeSubmitted()) {
+            const submitData = JSON.stringify({
+              userName: this.state.name,
+              userAge: this.state.age
+            });
+            alert(submitData);
+          } else {
+            if(this.nameStatus !== 'CORRECT'){
+              alert(this.messages.name[this.nameStatus])
+            } else if (this.ageStatus !== 'CORRECT'){
+              alert(this.messages.age[this.ageStatus])
+            }
+            
+          }
+        }
+
+        render(){
+          return (
+            <form className="form form_name_register">
+              <h2 className="form__header">Регистрируйся сейчас</h2>
+              <input className="form__input" onChange={this.onNameChangeHandler} value={this.state.name} placeholder="Введите имя"/>
+              <input className="form__input" onChange={this.onAgeChangeHandler} value={this.state.age} placeholder="Введите возраст"/>
+              <button className="form__button" onClick={this.onSubmitHandler} >
+                Зарегистрироваться
+              </button>
+            </form>
+          )
+        }
+      }
+
+      ReactDOM.render(
+        <LoginForm />,
+        document.getElementById("wrapper")
+      );
+
+
+
+
+
+
+      
+</script>
+
+
+  </body>
+</html>

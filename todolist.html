@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;subset=cyrillic" rel="stylesheet">
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6/prop-types.js"></script>
+
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+      }
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+
+      #wrapper {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+      }
+      .app {
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: center;
+          align-items: center;
+          width: 400px;
+      }
+      .to-do {
+          width: 100%;
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center;
+          padding: 4px 8px;
+          background-color: #fafafa;
+          border: 1px solid #dbdbdb;
+          margin-bottom: 10px;
+      }
+      .to-do__item {
+          align-self: flex-start;
+          align-items: center;
+          color: #000000;
+          max-width: 270px;
+      }
+      .to-do__date {
+          align-items: center;
+          font-size: 10px;
+          color: green;
+          margin-left: 16px;
+      }
+      .to-do__button_edit {
+          margin-left: auto;
+          margin-right: 8px;
+      }
+      .form__button {
+
+      }
+      .form__input {
+          margin-bottom: 16px;
+      }
+
+
+
+    </style>
+
+
+  </head>
+  <body>
+    <div id="wrapper">
+
+    <script type="text/babel">
+
+
+    class RenderToDos extends React.Component {
+        state = {
+            isEditPressed: false
+        }
+        editTodo = (e) => {
+            e.preventDefault()
+            this.setState({isEditPressed: true})
+        }
+        render () {
+                return (
+                    this.props.todos.map(todo => (
+                        <div key={todo.id} className="to-do">
+                            {
+                                this.state.isEditPressed === false
+                                ? <div className="to-do__item">{todo.text}<span className="to-do__date">{todo.date}</span></div>
+                                : <input value={this.state.inputValue} onChange={() => this.props.onEdit(todo.text)} />
+                            }
+                            {
+                                this.state.isEditPressed === false
+                                ? <button className="to-do__button_edit" onClick={this.editTodo}>Edit</button>
+                                : <button className="to-do__button_edit" onClick={() => this.props.editConfirm(todo.text)}>Save</button>
+                            }
+                            <button className="to-do__button" onClick={() => this.props.deleteTodoById(todo.id)}>Delete</button>
+                        </div>
+                    ))
+                )
+        }
+
+    }
+
+
+      class LoginWindow extends React.Component {
+        counter = 0;
+        d = new Date();
+        today = `${this.d.getHours()}:${this.d.getMinutes()} ${this.d.getDate()}/${this.d.getMonth()+1}/${this.d.getFullYear()}`;
+        state = {
+            inputValue: '',
+            todos: []
+        }
+        onChange = (e) => {
+            this.setState({
+                inputValue: e.target.value
+            })
+        }
+        onSubmit = (e) => {
+            e.preventDefault();
+            const todo = this.createTodo(this.state.inputValue);
+            this.setState({
+                inputValue: '',
+                todos: [...this.state.todos, todo]
+            })
+        }
+        onEdit = (text) => {
+            this.setState({
+                inputValue: text
+            })
+        }
+
+        editConfirm = (editedTodoText) => {
+            this.setState({
+                inputValue: '',
+                todos: this.state.todos.map(todo =>
+                    if (editedTodoText in todo) {
+                        const newText = todo.editedTodoText
+                        delete todo[editedTodoText]
+                        todo[this.state.inputValue] = newText
+                    }
+                )
+            })
+        }
+
+        createTodo(text) {
+            return {
+                id: this.counter++,
+                text: text,
+                date: this.today
+            }
+        }
+        deleteTodoById = (removedTodoId) => {
+            this.setState({
+                todos: this.state.todos.filter(todo => todo.id !== removedTodoId)
+            })
+        }
+
+        render() {
+            return (
+                <React.Fragment>
+                    <form className="app" onSubmit={this.onSubmit}>
+                        <RenderToDos todos={this.state.todos} deleteTodoById={this.deleteTodoById} onEdit={this.onEdit} editConfirm={this.editConfirm}/>
+                         <input className="form__input" value={this.state.inputValue} onChange={this.onChange} />
+                         <button className="form__button">Submit</button>
+                     </form>
+                 </React.Fragment>
+             )
+        }
+      }
+
+      ReactDOM.render(
+        <LoginWindow />,
+        document.getElementById("wrapper")
+      );
+
+    </script>
+
+  </body>
+</html>
